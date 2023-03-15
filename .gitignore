@@ -13,3 +13,13 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# VIM
+*.swo
+*.swp
+
+# Fixtures
+*.json
+
+# Default binary
+sui-validator-manager
