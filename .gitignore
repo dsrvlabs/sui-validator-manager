@@ -19,8 +19,5 @@ cover.out
 *.swo
 *.swp
 
-# Fixtures
-*.json
-
 # Default binary
 sui-validator-manager
