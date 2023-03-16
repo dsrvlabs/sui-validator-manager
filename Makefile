@@ -8,3 +8,6 @@ test:
 
 coverage:
 	@go test ./... -test.coverprofile cover.out
+
+clean:
+	@go clean
