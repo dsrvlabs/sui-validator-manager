@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/big"
 	"os"
 	"sync"
@@ -60,7 +59,8 @@ func main() {
 	)
 	t.AppendHeader(table.Row{
 		"Epoch", "Checkpoint",
-		"# TXs", "C. Cost", "S. Cost", "S. Rebate"})
+		"# TXs", "C. Cost", "S. Cost", "S. Rebate",
+	})
 	t.AppendRow(table.Row{
 		cp.Epoch.String(), cp.SequenceNumber.String(),
 		cp.NetworkTotalTransactions.String(),
