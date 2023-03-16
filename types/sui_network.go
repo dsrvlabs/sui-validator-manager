@@ -44,6 +44,16 @@ func (m *Mist) String() string {
 	return m.value.String()
 }
 
+func (m *Mist) Sui() *big.Float {
+	f := new(big.Float)
+	f.SetString(m.value.String())
+
+	r := new(big.Float)
+	r.Quo(f, big.NewFloat(1000000000.0))
+
+	return r
+}
+
 type Checkpoint struct {
 	Epoch                      Epoch       `json:"epoch,omitempty"`
 	SequenceNumber             json.Number `json:"sequenceNumber,omitempty"`
