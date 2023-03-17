@@ -1,4 +1,4 @@
-package main
+package view
 
 import (
 	"os"
@@ -7,31 +7,21 @@ import (
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 
-	"github.com/dsrvlabs/sui-validator-manager/rpc"
 	"github.com/dsrvlabs/sui-validator-manager/types"
 )
 
-type ValidatorCollector struct {
+type ValidatorView struct {
 	systemState *types.SuiSystemState
 }
 
-func (v *ValidatorCollector) Refresh() {
-	// TODO:
-	cli := rpc.NewClient([]string{"https://wave3-rpc.testnet.sui.io:443"})
-
-	var err error
-	v.systemState, err = cli.LatestSuiSystemState()
-
-	_ = err
-}
-
-func (v *ValidatorCollector) Render() {
+func (v *ValidatorView) Render() {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{
 		"#", "Name", "Vote(%)",
 		"Stake(SUI)", "Next Stake(SUI)",
 		"Reward Pool(SUI)", "RGP(MIST)",
+		"Next RGP(MIST)",
 	})
 
 	p := message.NewPrinter(language.English)
@@ -50,8 +40,13 @@ func (v *ValidatorCollector) Render() {
 			p.Sprintf("%f", nextStake),
 			p.Sprintf("%f", rewards),
 			v.GasPrice.String(),
+			v.NextEpochGasPrice.String(),
 		})
 	}
 
 	t.Render()
+}
+
+func NewValidatorView(state *types.SuiSystemState) Renderer {
+	return &ValidatorView{systemState: state}
 }
