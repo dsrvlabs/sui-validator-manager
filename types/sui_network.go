@@ -61,9 +61,10 @@ type Checkpoint struct {
 	NetworkTotalTransactions   json.Number `json:"networkTotalTransactions,omitempty"`
 	PreviousDigest             string      `json:"previousDigest,omitempty"`
 	EpochRollingGasCostSummary struct {
-		ComputationCost Mist `json:"computationCost,omitempty"`
-		StorageCost     Mist `json:"storageCost,omitempty"`
-		StorageRebate   Mist `json:"storageRebate,omitempty"`
+		ComputationCost         Mist `json:"computationCost,omitempty"`
+		StorageCost             Mist `json:"storageCost,omitempty"`
+		StorageRebate           Mist `json:"storageRebate,omitempty"`
+		NonRefundableStorageFee Mist `json:"NonRefundableStorageFee"`
 	} `json:"epochRollingGasCostSummary,omitempty"`
 	TimestampMs           uint64   `json:"timestampMs,omitempty"`
 	Transactions          []string `json:"transactions,omitempty"`
@@ -72,19 +73,36 @@ type Checkpoint struct {
 }
 
 type SuiSystemState struct {
-	Epoch                          Epoch  `json:"epoch,omitempty"`
-	ProtocolVersion                uint64 `json:"protocolVersion,omitempty"`
-	SystemStateVersion             uint64 `json:"systemStateVersion,omitempty"`
-	StorageFund                    Mist   `json:"storageFund,omitempty"`
-	ReferenceGasPrice              Mist   `json:"referenceGasPrice,omitempty"`
-	SafeMode                       bool   `json:"safeMode,omitempty"`
-	EpochStartTimestampMs          uint64 `json:"epochStartTimestampMs,omitempty"`
-	GovernanceStartEpoch           Epoch  `json:"governanceStartEpoch,omitempty"`
-	EpochDurationMs                uint64 `json:"epochDurationMs,omitempty"`
-	StakeSubsidyEpochCounter       Epoch  `json:"stakeSubsidyEpochCounter,omitempty"`
-	StakeSubsidyBalance            Mist   `json:"stakeSubsidyBalance,omitempty"`
-	StakeSubsidyCurrentEpochAmount Mist   `json:"stakeSubsidyCurrentEpochAmount,omitempty"`
-	TotalStake                     Mist   `json:"totalStake,omitempty"`
+	Epoch                               Epoch  `json:"epoch,omitempty"`
+	ProtocolVersion                     uint64 `json:"protocolVersion,omitempty"`
+	SystemStateVersion                  uint64 `json:"systemStateVersion,omitempty"`
+	StorageFundTotalObjectStorageRebate Mist   `json:"storageFundTotalObjectStorageRebates,omitempty"`
+	StorageFundNonRefundableBalance     Mist   `json:"storageFundNonRefundableBalance,omitempty"`
+	ReferenceGasPrice                   Mist   `json:"referenceGasPrice,omitempty"`
+
+	SafeMode                        bool `json:"safeMode,omitempty"`
+	SafeModeStorageRewards          Mist `json:"safeModeStorageRewards,omitempty"`
+	SafeModeComputationRewards      Mist `json:"safeModeComputationRewards,omitempty"`
+	SafeModeNonRefundableStorageFee Mist `json:"safeModeNonRefundableStorageFee,omitempty"`
+
+	EpochStartTimestampMs  uint64 `json:"epochStartTimestampMs,omitempty"`
+	EpochDurationMs        uint64 `json:"epochDurationMs,omitempty"`
+	StakeSubsidyStartEpoch Epoch  `json:"stakeSubsidyStartEpoch,omitempty"`
+	MaxValidatorCount      uint64 `json:"maxValidatorCount,omitempty"`
+
+	MinValidatorJoiningStake   Mist `json:"minValidatorJoiningStake"`
+	ValidatorLowStakeThreshold Mist `json:"validatorLowStakeThreshold"`
+
+	ValidatorVeryLowStakeThreshold Mist  `json:"validatorVeryLowStakeThreshold"`
+	ValidatorLowStakeGracePeriod   Epoch `json:"validatorLowStakeGracePeriod,omitempty"`
+
+	StakeSubsidyBalance                   Mist   `json:"stakeSubsidyBalance,omitempty"`
+	StakeSubsidyDistributionCounter       Epoch  `json:"stakeSubsidyDistributionCounter"`
+	StakeSubsidyCurrentDistributionAmount Mist   `json:"stakeSubsidyCurrentDistributionAmount"`
+	StakeSubsidyPeriodLength              Epoch  `json:"stakeSubsidyPeriodLength"`
+	StakeSubsidyDecreaseRate              uint64 `json:"stakeSubsidyDecreaseRate"`
+
+	TotalStake Mist `json:"totalStake,omitempty"`
 
 	ActiveValidators []struct {
 		SuiAddress             string `json:"suiAddress,omitempty"`

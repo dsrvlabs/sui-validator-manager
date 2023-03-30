@@ -3,6 +3,7 @@ package rpc
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math/big"
@@ -74,9 +75,9 @@ func (c *rpcClient) LatestCheckpointSequenceNumber() (*big.Int, error) {
 	}
 
 	respData := struct {
-		ID      string   `json:"id"`
-		Jsonrpc string   `json:"jsonrpc"`
-		Result  *big.Int `json:"result"`
+		ID      string `json:"id"`
+		Jsonrpc string `json:"jsonrpc"`
+		Result  string `json:"result"`
 	}{}
 
 	err = json.Unmarshal(respBody, &respData)
@@ -84,11 +85,16 @@ func (c *rpcClient) LatestCheckpointSequenceNumber() (*big.Int, error) {
 		return nil, err
 	}
 
-	return respData.Result, nil
+	ret, ok := new(big.Int).SetString(respData.Result, 10)
+	if !ok {
+		return nil, errors.New("convert response failed")
+	}
+
+	return ret, nil
 }
 
 func (c *rpcClient) Checkpoint(no *big.Int) (*types.Checkpoint, error) {
-	msg := newRequestMessage("sui_getCheckpoint", []any{no})
+	msg := newRequestMessage("sui_getCheckpoint", []any{no.String()})
 	rawMsg, err := json.Marshal(msg)
 	if err != nil {
 		return nil, err
@@ -129,7 +135,7 @@ func (c *rpcClient) Checkpoint(no *big.Int) (*types.Checkpoint, error) {
 }
 
 func (c *rpcClient) LatestSuiSystemState() (*types.SuiSystemState, error) {
-	msg := newRequestMessage("sui_getLatestSuiSystemState", []any{})
+	msg := newRequestMessage("suix_getLatestSuiSystemState", []any{})
 	rawMsg, err := json.Marshal(msg)
 	if err != nil {
 		return nil, err

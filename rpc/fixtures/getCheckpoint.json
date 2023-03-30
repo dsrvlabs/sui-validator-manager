@@ -2,19 +2,19 @@
   "jsonrpc": "2.0",
   "result": {
     "epoch": 0,
-    "sequenceNumber": 2000,
-    "digest": "4uYJt5NcXCxoZFRehsNeZn8dtrUujmn7qhrFaV4Zt1as",
+    "sequenceNumber": "2000",
+    "digest": "9QSYond1gVerejrBgvnZxC5CD3jxKcsubDZdcZni5Ua2",
     "networkTotalTransactions": 2001,
-    "previousDigest": "FrtoQ9tACumuxb83iiSdwPW2Q122KRHubcHKgjKDRxEb",
+    "previousDigest": "5LXvxVpbvCwLFArQ74gxmQg4LLa9kQmv9FtReR1FmPhh",
     "epochRollingGasCostSummary": {
       "computationCost": 1,
       "storageCost": 2,
-      "storageRebate": 3
+      "storageRebate": 3,
+      "nonRefundableStorageFee": 4
     },
-    "timestampMs": 1678893005933,
-    "endOfEpochData": null,
+    "timestampMs": 1680014365060,
     "transactions": [
-      "2vXkHf76Y3CCAgUQnYiNXwnHzBSTdQrBUKXpYBg31m1Q"
+      "7dNSFkcVAm4GDQ1wPsMC1W2JpWtnHYCaT6Wq7UvH3naV"
     ],
     "checkpointCommitments": []
   },

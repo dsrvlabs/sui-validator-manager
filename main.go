@@ -16,7 +16,7 @@ func main() {
 		Aliases: []string{"m"},
 		Run: func(cmd *cobra.Command, args []string) {
 			for {
-				cli := rpc.NewClient([]string{"https://wave3-rpc.testnet.sui.io:443"})
+				cli := rpc.NewClient([]string{"https://fullnode.testnet.sui.io:443"})
 
 				seq, err := cli.LatestCheckpointSequenceNumber()
 				cp, err := cli.Checkpoint(seq)
@@ -47,7 +47,7 @@ func main() {
 		Use:     "list",
 		Aliases: []string{"l"},
 		Run: func(cmd *cobra.Command, args []string) {
-			cli := rpc.NewClient([]string{"https://wave3-rpc.testnet.sui.io:443"})
+			cli := rpc.NewClient([]string{"https://fullnode.testnet.sui.io:443"})
 
 			seq, err := cli.LatestCheckpointSequenceNumber()
 			cp, err := cli.Checkpoint(seq)
