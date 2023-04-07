@@ -104,55 +104,7 @@ type SuiSystemState struct {
 
 	TotalStake Mist `json:"totalStake,omitempty"`
 
-	ActiveValidators []struct {
-		SuiAddress             string `json:"suiAddress,omitempty"`
-		ProtocolPubkeyBytes    string `json:"protocolPubkeyBytes,omitempty"`
-		NetworkPubkeyBytes     string `json:"networkPubkeyBytes,omitempty"`
-		WorkerPubkeyBytes      string `json:"workerPubkeyBytes,omitempty"`
-		ProofOfPossessionBytes string `json:"proofOfPossessionBytes,omitempty"`
-		Name                   string `json:"name,omitempty"`
-		Description            string `json:"description,omitempty"`
-		ImageUrl               string `json:"imageUrl,omitempty"`
-		ProjectUrl             string `json:"projectUrl,omitempty"`
-
-		NetAddress     string `json:"netAddress,omitempty"`
-		P2PAddress     string `json:"p2pAddress,omitempty"`
-		PrimaryAddress string `json:"primaryAddress,omitempty"`
-		WorkerAddress  string `json:"workerAddress,omitempty"`
-
-		NextEpochProtocolPubkeyBytes string `json:"nextEpochProtocolPubkeyBytes,omitempty"`
-		NextNetworkPubkeyBytes       string `json:"nextNetworkPubkeyBytes,omitempty"`
-		NextWorkerPubkeyBytes        string `json:"nextWorkerPubkeyBytes,omitempty"`
-		NextProofOfPossessionBytes   string `json:"nextProofOfPossessionBytes,omitempty"`
-		NextNetAddress               string `json:"nextNetAddress,omitempty"`
-		NextP2PAddress               string `json:"nextP2PAddress,omitempty"`
-		NextPrimaryAddress           string `json:"nextPrimaryAddress,omitempty"`
-		NextWorkerAddress            string `json:"nextWorkerAddress,omitempty"`
-
-		VotingPower    uint32 `json:"votingPower,omitempty"`
-		OperationCapID string `json:"operationCapId,omitempty"`
-		GasPrice       Mist   `json:"gasPrice,omitempty"`
-		CommissionRate uint32 `json:"commissionRate,omitempty"`
-
-		NextEpochStake          Mist   `json:"nextEpochStake,omitempty"`
-		NextEpochGasPrice       Mist   `json:"nextEpochGasPrice,omitempty"`
-		NextEpochCommissionRate uint32 `json:"nextEpochCommissionRate,omitempty"`
-
-		StakingPoolID                string `json:"stakingPoolId,omitempty"`
-		StakingPoolActivationEpoch   Epoch  `json:"stakingPoolActivationEpoch,omitempty"`
-		StakingPoolDeactivationEpoch Epoch  `json:"stakingPoolDeactivationEpoch,omitempty"`
-		StakingPoolSuiBalance        Mist   `json:"stakingPoolSuiBalance,omitempty"`
-
-		RewardsPool      Mist `json:"rewardsPool,omitempty"`
-		PoolTokenBalance Mist `json:"poolTokenBalance,omitempty"`
-
-		PendingStake             Mist `json:"pendingStake,omitempty"`
-		PendingTotalSuiWithdraw  Mist `json:"pendingTotalSuiWithdraw,omitempty"`
-		PendingPoolTokenWithdraw Mist `json:"pendingPoolTokenWithdraw,omitempty"`
-
-		ExchangeRatesID   string `json:"exchangeRatesId,omitempty"`
-		ExchangeRatesSize uint64 `json:"exchangeRatesSize,omitempty"`
-	} `json:"activeValidators,omitempty"`
+	ActiveValidators []Validator `json:"activeValidators,omitempty"`
 
 	PendingActiveValidatorsID   string `json:"pendingActiveValidatorsId,omitempty"`
 	PendingActiveValidatorsSize uint64 `json:"pendingActiveValidatorsSize,omitempty"`
@@ -165,4 +117,54 @@ type SuiSystemState struct {
 	ValidatorCandidatesSize uint64 `json:"validatorCandidatesSize,omitempty"`
 	// AtRiskValidators: [],
 	// ValidatorReportRecords: []
+}
+
+type Validator struct {
+	SuiAddress             string `json:"suiAddress,omitempty"`
+	ProtocolPubkeyBytes    string `json:"protocolPubkeyBytes,omitempty"`
+	NetworkPubkeyBytes     string `json:"networkPubkeyBytes,omitempty"`
+	WorkerPubkeyBytes      string `json:"workerPubkeyBytes,omitempty"`
+	ProofOfPossessionBytes string `json:"proofOfPossessionBytes,omitempty"`
+	Name                   string `json:"name,omitempty"`
+	Description            string `json:"description,omitempty"`
+	ImageUrl               string `json:"imageUrl,omitempty"`
+	ProjectUrl             string `json:"projectUrl,omitempty"`
+
+	NetAddress     string `json:"netAddress,omitempty"`
+	P2PAddress     string `json:"p2pAddress,omitempty"`
+	PrimaryAddress string `json:"primaryAddress,omitempty"`
+	WorkerAddress  string `json:"workerAddress,omitempty"`
+
+	NextEpochProtocolPubkeyBytes string `json:"nextEpochProtocolPubkeyBytes,omitempty"`
+	NextNetworkPubkeyBytes       string `json:"nextNetworkPubkeyBytes,omitempty"`
+	NextWorkerPubkeyBytes        string `json:"nextWorkerPubkeyBytes,omitempty"`
+	NextProofOfPossessionBytes   string `json:"nextProofOfPossessionBytes,omitempty"`
+	NextNetAddress               string `json:"nextNetAddress,omitempty"`
+	NextP2PAddress               string `json:"nextP2PAddress,omitempty"`
+	NextPrimaryAddress           string `json:"nextPrimaryAddress,omitempty"`
+	NextWorkerAddress            string `json:"nextWorkerAddress,omitempty"`
+
+	VotingPower    uint32 `json:"votingPower,omitempty"`
+	OperationCapID string `json:"operationCapId,omitempty"`
+	GasPrice       Mist   `json:"gasPrice,omitempty"`
+	CommissionRate uint32 `json:"commissionRate,omitempty"`
+
+	NextEpochStake          Mist   `json:"nextEpochStake,omitempty"`
+	NextEpochGasPrice       Mist   `json:"nextEpochGasPrice,omitempty"`
+	NextEpochCommissionRate uint32 `json:"nextEpochCommissionRate,omitempty"`
+
+	StakingPoolID                string `json:"stakingPoolId,omitempty"`
+	StakingPoolActivationEpoch   Epoch  `json:"stakingPoolActivationEpoch,omitempty"`
+	StakingPoolDeactivationEpoch Epoch  `json:"stakingPoolDeactivationEpoch,omitempty"`
+	StakingPoolSuiBalance        Mist   `json:"stakingPoolSuiBalance,omitempty"`
+
+	RewardsPool      Mist `json:"rewardsPool,omitempty"`
+	PoolTokenBalance Mist `json:"poolTokenBalance,omitempty"`
+
+	PendingStake             Mist `json:"pendingStake,omitempty"`
+	PendingTotalSuiWithdraw  Mist `json:"pendingTotalSuiWithdraw,omitempty"`
+	PendingPoolTokenWithdraw Mist `json:"pendingPoolTokenWithdraw,omitempty"`
+
+	ExchangeRatesID   string `json:"exchangeRatesId,omitempty"`
+	ExchangeRatesSize uint64 `json:"exchangeRatesSize,omitempty"`
 }
