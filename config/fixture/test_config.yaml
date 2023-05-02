@@ -1,0 +1,5 @@
+rpc:
+- name: hello
+  endpoint: https://hello.world
+- name: world
+  endpoint: https://dsrv.sui

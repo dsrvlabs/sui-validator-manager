@@ -1,0 +1,3 @@
+rpc:
+- name: sui
+  endpoint: https://fullnode.testnet.sui.io:443

@@ -2,7 +2,11 @@ package types
 
 import (
 	"encoding/json"
+	"errors"
 	"math/big"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type Epoch struct {
@@ -11,7 +15,7 @@ type Epoch struct {
 
 func (m *Epoch) UnmarshalJSON(data []byte) error {
 	v := new(big.Int)
-	_, _ = v.SetString(string(data), 10)
+	_, _ = v.SetString(strings.Trim(string(data), "\""), 10)
 	m.value = v
 	return nil
 }
@@ -31,7 +35,7 @@ type Mist struct {
 
 func (m *Mist) UnmarshalJSON(data []byte) error {
 	v := new(big.Int)
-	_, _ = v.SetString(string(data), 10)
+	_, _ = v.SetString(strings.Trim(string(data), "\""), 10)
 	m.value = v
 	return nil
 }
@@ -54,6 +58,45 @@ func (m *Mist) Sui() *big.Float {
 	return r
 }
 
+type Timestamp struct {
+	time time.Time
+}
+
+func (t *Timestamp) UnmarshalJSON(data []byte) error {
+	val, err := strconv.ParseInt(strings.Trim(string(data), "\""), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	t.time = time.UnixMilli(int64(val))
+
+	return nil
+}
+
+func (t *Timestamp) Unix() int64 {
+	return t.time.Unix()
+}
+
+type BigInt struct {
+	value *big.Int
+}
+
+func (b *BigInt) UnmarshalJSON(data []byte) error {
+	n := new(big.Int)
+	bn, ok := n.SetString(strings.Trim(string(data), "\""), 10)
+	if !ok {
+		return errors.New("cannot parse value")
+	}
+
+	b.value = bn
+
+	return nil
+}
+
+func (b *BigInt) String() string {
+	return b.value.String()
+}
+
 type Checkpoint struct {
 	Epoch                      Epoch       `json:"epoch,omitempty"`
 	SequenceNumber             json.Number `json:"sequenceNumber,omitempty"`
@@ -64,18 +107,19 @@ type Checkpoint struct {
 		ComputationCost         Mist `json:"computationCost,omitempty"`
 		StorageCost             Mist `json:"storageCost,omitempty"`
 		StorageRebate           Mist `json:"storageRebate,omitempty"`
-		NonRefundableStorageFee Mist `json:"NonRefundableStorageFee"`
+		NonRefundableStorageFee Mist `json:"nonRefundableStorageFee"`
 	} `json:"epochRollingGasCostSummary,omitempty"`
-	TimestampMs           uint64   `json:"timestampMs,omitempty"`
-	Transactions          []string `json:"transactions,omitempty"`
-	CheckpointCommitments []string `json:"checkpointCommitments,omitempty"`
+	TimestampMs           Timestamp `json:"timestampMs,omitempty"`
+	Transactions          []string  `json:"transactions,omitempty"`
+	CheckpointCommitments []string  `json:"checkpointCommitments,omitempty"`
+	ValidatorSignature    string    `json:"validatorSignature,omitempty"`
 	// EndOfEpochData // TODO:
 }
 
 type SuiSystemState struct {
 	Epoch                               Epoch  `json:"epoch,omitempty"`
-	ProtocolVersion                     uint64 `json:"protocolVersion,omitempty"`
-	SystemStateVersion                  uint64 `json:"systemStateVersion,omitempty"`
+	ProtocolVersion                     string `json:"protocolVersion,omitempty"`
+	SystemStateVersion                  string `json:"systemStateVersion,omitempty"`
 	StorageFundTotalObjectStorageRebate Mist   `json:"storageFundTotalObjectStorageRebates,omitempty"`
 	StorageFundNonRefundableBalance     Mist   `json:"storageFundNonRefundableBalance,omitempty"`
 	ReferenceGasPrice                   Mist   `json:"referenceGasPrice,omitempty"`
@@ -85,10 +129,10 @@ type SuiSystemState struct {
 	SafeModeComputationRewards      Mist `json:"safeModeComputationRewards,omitempty"`
 	SafeModeNonRefundableStorageFee Mist `json:"safeModeNonRefundableStorageFee,omitempty"`
 
-	EpochStartTimestampMs  uint64 `json:"epochStartTimestampMs,omitempty"`
-	EpochDurationMs        uint64 `json:"epochDurationMs,omitempty"`
-	StakeSubsidyStartEpoch Epoch  `json:"stakeSubsidyStartEpoch,omitempty"`
-	MaxValidatorCount      uint64 `json:"maxValidatorCount,omitempty"`
+	EpochStartTimestampMs  Timestamp   `json:"epochStartTimestampMs,omitempty"`
+	EpochDurationMs        json.Number `json:"epochDurationMs,omitempty"`
+	StakeSubsidyStartEpoch Epoch       `json:"stakeSubsidyStartEpoch,omitempty"`
+	MaxValidatorCount      json.Number `json:"maxValidatorCount,omitempty"`
 
 	MinValidatorJoiningStake   Mist `json:"minValidatorJoiningStake"`
 	ValidatorLowStakeThreshold Mist `json:"validatorLowStakeThreshold"`
@@ -106,15 +150,15 @@ type SuiSystemState struct {
 
 	ActiveValidators []Validator `json:"activeValidators,omitempty"`
 
-	PendingActiveValidatorsID   string `json:"pendingActiveValidatorsId,omitempty"`
-	PendingActiveValidatorsSize uint64 `json:"pendingActiveValidatorsSize,omitempty"`
+	PendingActiveValidatorsID   string      `json:"pendingActiveValidatorsId,omitempty"`
+	PendingActiveValidatorsSize json.Number `json:"pendingActiveValidatorsSize,omitempty"`
 	// PendingRemovals: [],
-	StakingPoolMappingsId   string `json:"stakingPoolMappingsId,omitempty"`
-	StakingPoolMappingsSize uint64 `json:"stakingPoolMappingsSize,omitempty"`
-	InactivePoolsId         string `json:"inactivePoolsId,omitempty"`
-	InactivePoolsSize       uint64 `json:"inactivePoolsSize,omitempty"`
-	ValidatorCandidatesId   string `json:"validatorCandidatesId,omitempty"`
-	ValidatorCandidatesSize uint64 `json:"validatorCandidatesSize,omitempty"`
+	StakingPoolMappingsId   string      `json:"stakingPoolMappingsId,omitempty"`
+	StakingPoolMappingsSize json.Number `json:"stakingPoolMappingsSize,omitempty"`
+	InactivePoolsId         string      `json:"inactivePoolsId,omitempty"`
+	InactivePoolsSize       json.Number `json:"inactivePoolsSize,omitempty"`
+	ValidatorCandidatesId   string      `json:"validatorCandidatesId,omitempty"`
+	ValidatorCandidatesSize json.Number `json:"validatorCandidatesSize,omitempty"`
 	// AtRiskValidators: [],
 	// ValidatorReportRecords: []
 }
@@ -144,14 +188,14 @@ type Validator struct {
 	NextPrimaryAddress           string `json:"nextPrimaryAddress,omitempty"`
 	NextWorkerAddress            string `json:"nextWorkerAddress,omitempty"`
 
-	VotingPower    uint32 `json:"votingPower,omitempty"`
-	OperationCapID string `json:"operationCapId,omitempty"`
-	GasPrice       Mist   `json:"gasPrice,omitempty"`
-	CommissionRate uint32 `json:"commissionRate,omitempty"`
+	VotingPower    json.Number `json:"votingPower,omitempty"`
+	OperationCapID string      `json:"operationCapId,omitempty"`
+	GasPrice       Mist        `json:"gasPrice,omitempty"`
+	CommissionRate json.Number `json:"commissionRate,omitempty"`
 
-	NextEpochStake          Mist   `json:"nextEpochStake,omitempty"`
-	NextEpochGasPrice       Mist   `json:"nextEpochGasPrice,omitempty"`
-	NextEpochCommissionRate uint32 `json:"nextEpochCommissionRate,omitempty"`
+	NextEpochStake          Mist        `json:"nextEpochStake,omitempty"`
+	NextEpochGasPrice       Mist        `json:"nextEpochGasPrice,omitempty"`
+	NextEpochCommissionRate json.Number `json:"nextEpochCommissionRate,omitempty"`
 
 	StakingPoolID                string `json:"stakingPoolId,omitempty"`
 	StakingPoolActivationEpoch   Epoch  `json:"stakingPoolActivationEpoch,omitempty"`
@@ -165,6 +209,6 @@ type Validator struct {
 	PendingTotalSuiWithdraw  Mist `json:"pendingTotalSuiWithdraw,omitempty"`
 	PendingPoolTokenWithdraw Mist `json:"pendingPoolTokenWithdraw,omitempty"`
 
-	ExchangeRatesID   string `json:"exchangeRatesId,omitempty"`
-	ExchangeRatesSize uint64 `json:"exchangeRatesSize,omitempty"`
+	ExchangeRatesID   string      `json:"exchangeRatesId,omitempty"`
+	ExchangeRatesSize json.Number `json:"exchangeRatesSize,omitempty"`
 }

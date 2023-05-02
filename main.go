@@ -4,23 +4,30 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/dsrvlabs/sui-validator-manager/rpc"
 	"github.com/dsrvlabs/sui-validator-manager/view"
+
+	"github.com/dsrvlabs/sui-validator-manager/config"
 )
 
-var (
-	rpcURL = "https://fullnode.testnet.sui.io:443"
-)
+var rpcURL = "https://sui-rpc-mainnet.testnet-pride.com:443"
 
 func main() {
 	rootCmd := &cobra.Command{}
 	console := &cobra.Command{
 		Use:     "monitor",
 		Aliases: []string{"m"},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
+			configFile := viper.GetString("console_config")
+			config, err := config.Load(configFile)
+			if err != nil {
+				return err
+			}
+
 			for {
-				cli := rpc.NewClient([]string{rpcURL})
+				cli := rpc.NewClient([]string{config.RPC[0].Endpoint})
 
 				seq, err := cli.LatestCheckpointSequenceNumber()
 				if err != nil {
@@ -63,22 +70,28 @@ func main() {
 	list := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},
-		Run: func(cmd *cobra.Command, args []string) {
-			cli := rpc.NewClient([]string{rpcURL})
+		RunE: func(cmd *cobra.Command, args []string) error {
+			configFile := viper.GetString("list_config")
+			config, err := config.Load(configFile)
+			if err != nil {
+				return err
+			}
+
+			cli := rpc.NewClient([]string{config.RPC[0].Endpoint})
 
 			seq, err := cli.LatestCheckpointSequenceNumber()
 			if err != nil {
-				return
+				return err
 			}
 
 			cp, err := cli.Checkpoint(seq)
 			if err != nil {
-				return
+				return err
 			}
 
 			state, err := cli.LatestSuiSystemState()
 			if err != nil {
-				return
+				return err
 			}
 
 			nView := view.NewNetworkView(&view.NetworkViewData{
@@ -94,10 +107,17 @@ func main() {
 
 			vView := view.NewValidatorView(state)
 			vView.Render()
+
+			return nil
 		},
 	}
 
+	_ = console.PersistentFlags().StringP("config", "c", "", "Config file path")
+	viper.BindPFlag("console_config", console.PersistentFlags().Lookup("config"))
 	rootCmd.AddCommand(console)
+
+	_ = list.PersistentFlags().StringP("config", "c", "", "Config file path")
+	viper.BindPFlag("list_config", list.PersistentFlags().Lookup("config"))
 	rootCmd.AddCommand(list)
 
 	if err := rootCmd.Execute(); err != nil {

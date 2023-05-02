@@ -51,12 +51,16 @@ func (v *ValidatorView) Render() {
 		nextStake, _ := v.NextEpochStake.Sui().Float64()
 		rewards, _ := v.RewardsPool.Sui().Float64()
 
-		accVotes += v.VotingPower
+		power, err := v.VotingPower.Int64()
+		if err != nil {
+			return
+		}
+		accVotes += uint32(power)
 
 		t.AppendRow(table.Row{
 			i + 1,
 			v.Name,
-			float32(v.VotingPower) / 100.0,
+			float32(power) / 100.0,
 			float32(accVotes) / 100.0,
 			p.Sprintf("%f", stake),
 			p.Sprintf("%f", nextStake),

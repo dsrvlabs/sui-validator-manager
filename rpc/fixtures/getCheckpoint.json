@@ -1,22 +1,23 @@
 {
   "jsonrpc": "2.0",
   "result": {
-    "epoch": 0,
+    "epoch": "0",
     "sequenceNumber": "2000",
-    "digest": "9QSYond1gVerejrBgvnZxC5CD3jxKcsubDZdcZni5Ua2",
-    "networkTotalTransactions": 2001,
-    "previousDigest": "5LXvxVpbvCwLFArQ74gxmQg4LLa9kQmv9FtReR1FmPhh",
+    "digest": "4tvXxeUpTU1XYw8DqvZBYfZkTek5CDPR3myuyBA6vwCH",
+    "networkTotalTransactions": "2001",
+    "previousDigest": "GF9J2Xv8HUUcx8yH5CsVZYRxvn88jWXqP71HoxjMmxcv",
     "epochRollingGasCostSummary": {
-      "computationCost": 1,
-      "storageCost": 2,
-      "storageRebate": 3,
-      "nonRefundableStorageFee": 4
+      "computationCost": "1",
+      "storageCost": "2",
+      "storageRebate": "3",
+      "nonRefundableStorageFee": "4"
     },
-    "timestampMs": 1680014365060,
+    "timestampMs": "1681394996136",
     "transactions": [
-      "7dNSFkcVAm4GDQ1wPsMC1W2JpWtnHYCaT6Wq7UvH3naV"
+      "DZDJjt92zFt8xjnm81ooN84R9m6fF5tNMdL71hwMLATB"
     ],
-    "checkpointCommitments": []
+    "checkpointCommitments": [],
+    "validatorSignature": "jN7LF69ln0JdZ5BDD+o/Rl1qtDcSx798m1t/ASZibdSSqBLjgzZlsqDU/Zh/j8JR"
   },
-  "id": "1"
+  "id": 1
 }
