@@ -39,6 +39,8 @@ type SuiClient interface {
 	LatestCheckpointSequenceNumber() (*big.Int, error)
 	Checkpoint(no *big.Int) (*types.Checkpoint, error)
 	LatestSuiSystemState() (*types.SuiSystemState, error)
+
+	GetStakes(address string) (types.StakeInfoList, error)
 }
 
 type rpcClient struct {
@@ -173,6 +175,44 @@ func (c *rpcClient) LatestSuiSystemState() (*types.SuiSystemState, error) {
 	}
 
 	return &respMsg.Result, nil
+}
+
+func (c *rpcClient) GetStakes(address string) (types.StakeInfoList, error) {
+	msg := newRequestMessage("suix_getStakes", []any{address})
+	rawMsg, err := json.Marshal(msg)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, c.endpoints[0], bytes.NewReader(rawMsg))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("request failed with %d", resp.StatusCode)
+	}
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	respMsg := struct {
+		Jsonrpc string            `json:"jsonrpc"`
+		Id      string            `json:"id"`
+		Result  []types.StakeInfo `json:"result"`
+	}{}
+
+	err = json.Unmarshal(respBody, &respMsg)
+
+	return respMsg.Result, nil
 }
 
 func NewClient(endpoints []string) SuiClient {

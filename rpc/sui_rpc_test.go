@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
@@ -78,10 +79,11 @@ func TestCheckpoint(t *testing.T) {
 	assert.Equal(t, "3", cp.EpochRollingGasCostSummary.StorageRebate.String())
 	assert.Equal(t, "4", cp.EpochRollingGasCostSummary.NonRefundableStorageFee.String())
 
-	assert.Equal(t, int64(1681394996136) / 1000, cp.TimestampMs.Unix())
+	assert.Equal(t, int64(1681394996136)/1000, cp.TimestampMs.Unix())
 	assert.Equal(t, "DZDJjt92zFt8xjnm81ooN84R9m6fF5tNMdL71hwMLATB", cp.Transactions[0])
 	assert.Equal(t, []string{}, cp.CheckpointCommitments)
-	assert.Equal(t, "jN7LF69ln0JdZ5BDD+o/Rl1qtDcSx798m1t/ASZibdSSqBLjgzZlsqDU/Zh/j8JR", cp.ValidatorSignature)
+	assert.Equal(t, "jN7LF69ln0JdZ5BDD+o/Rl1qtDcSx798m1t/ASZibdSSqBLjgzZlsqDU/Zh/j8JR",
+		cp.ValidatorSignature)
 }
 
 func TestLatestSuiSystemState(t *testing.T) {
@@ -196,4 +198,33 @@ func TestLatestSuiSystemState(t *testing.T) {
 	assert.Equal(t, "0", state.InactivePoolsSize.String())
 	assert.Equal(t, "0x94f89425db4d5bfa8d982d17f5746a1ac35ccb863662ee9486587e1e2d922763", state.ValidatorCandidatesId)
 	assert.Equal(t, "0", state.ValidatorCandidatesSize.String())
+}
+
+func TestGetStakes(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	fixture := "./fixtures/getStakes.json"
+	f, err := os.Open(fixture)
+	defer f.Close()
+
+	data, err := io.ReadAll(f)
+
+	httpmock.RegisterResponder(
+		http.MethodPost,
+		url,
+		httpmock.NewStringResponder(http.StatusOK, string(data)),
+	)
+
+	cli := NewClient([]string{url})
+
+	stakeInfo, err := cli.GetStakes("0x6f4e73ee97bfae95e054d31dff1361a839aaadf2cfdb873ad2b07d479507905a")
+	assert.Nil(t, err)
+
+	var stakes []types.Stake = stakeInfo[0].Stakes
+	sort.Sort(types.StakeByEpoch(stakes))
+
+	assert.Equal(t, "0x6f4e73ee97bfae95e054d31dff1361a839aaadf2cfdb873ad2b07d479507905a", stakeInfo[0].ValidatorAddress)
+	assert.Equal(t, "1349674360863", stakeInfo[0].Stakes.Sum().String())
+	 assert.Equal(t, "1349674360863", stakeInfo.StakeSum().String())
 }

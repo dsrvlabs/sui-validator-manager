@@ -28,9 +28,20 @@ func (m *Epoch) String() string {
 	return m.value.String()
 }
 
+func (m *Epoch) BigInt() *big.Int {
+	return m.value
+}
+
 // Mist is smallest unit of Sui token.
 type Mist struct {
 	value *big.Int
+}
+
+func (m *Mist) SetString(value string) *Mist {
+	v := new(big.Int)
+	_, _ = v.SetString(strings.Trim(value, "\""), 10)
+	m.value = v
+	return m
 }
 
 func (m *Mist) UnmarshalJSON(data []byte) error {
@@ -46,6 +57,10 @@ func (m *Mist) String() string {
 	}
 
 	return m.value.String()
+}
+
+func (m *Mist) BigInt() *big.Int {
+	return m.value
 }
 
 func (m *Mist) Sui() *big.Float {
@@ -140,13 +155,13 @@ type SuiSystemState struct {
 	ValidatorVeryLowStakeThreshold Mist  `json:"validatorVeryLowStakeThreshold"`
 	ValidatorLowStakeGracePeriod   Epoch `json:"validatorLowStakeGracePeriod,omitempty"`
 
-	StakeSubsidyBalance                   Mist   `json:"stakeSubsidyBalance,omitempty"`
+	StakeSubsidyBalance                   *Mist   `json:"stakeSubsidyBalance,omitempty"`
 	StakeSubsidyDistributionCounter       Epoch  `json:"stakeSubsidyDistributionCounter"`
-	StakeSubsidyCurrentDistributionAmount Mist   `json:"stakeSubsidyCurrentDistributionAmount"`
+	StakeSubsidyCurrentDistributionAmount *Mist   `json:"stakeSubsidyCurrentDistributionAmount"`
 	StakeSubsidyPeriodLength              Epoch  `json:"stakeSubsidyPeriodLength"`
 	StakeSubsidyDecreaseRate              uint64 `json:"stakeSubsidyDecreaseRate"`
 
-	TotalStake Mist `json:"totalStake,omitempty"`
+	TotalStake *Mist `json:"totalStake,omitempty"`
 
 	ActiveValidators []Validator `json:"activeValidators,omitempty"`
 
@@ -200,7 +215,7 @@ type Validator struct {
 	StakingPoolID                string `json:"stakingPoolId,omitempty"`
 	StakingPoolActivationEpoch   Epoch  `json:"stakingPoolActivationEpoch,omitempty"`
 	StakingPoolDeactivationEpoch Epoch  `json:"stakingPoolDeactivationEpoch,omitempty"`
-	StakingPoolSuiBalance        Mist   `json:"stakingPoolSuiBalance,omitempty"`
+	StakingPoolSuiBalance        *Mist   `json:"stakingPoolSuiBalance,omitempty"`
 
 	RewardsPool      Mist `json:"rewardsPool,omitempty"`
 	PoolTokenBalance Mist `json:"poolTokenBalance,omitempty"`
