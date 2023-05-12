@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/dsrvlabs/sui-validator-manager/config"
+	"github.com/dsrvlabs/sui-validator-manager/pricefeeder"
 	"github.com/dsrvlabs/sui-validator-manager/rgp"
 	"github.com/dsrvlabs/sui-validator-manager/rpc"
 	"github.com/dsrvlabs/sui-validator-manager/types"
@@ -177,7 +178,7 @@ func main() {
 				state.StorageFundNonRefundableBalance.BigInt(),
 				state.StorageFundTotalObjectStorageRebate.BigInt())
 
-			// TODO: Predict Computational cost.
+			// TODO: Predict Computational cost, not use current.
 			reward, err := rgp.CalculateReward(
 				*state,
 				storageFund,
@@ -185,7 +186,6 @@ func main() {
 				totalSelfStakes,
 				valAddress,
 			)
-
 			if err != nil {
 				return err
 			}
@@ -193,8 +193,24 @@ func main() {
 			suiReward := types.Mist{}
 			suiReward.SetString(reward.String())
 
+			// TODO: Get token price.
+			feeder := pricefeeder.NewClient()
+			suiUSD, err := feeder.QueryPrice()
+			if err != nil {
+				return err
+			}
+
+			bfSuiInUSD := new(big.Float).SetFloat64(suiUSD)
+			rewardUSD := new(big.Float).Mul(suiReward.Sui(), bfSuiInUSD)
+
 			fmt.Printf("Expected reward of %s\n", valAddress)
 			fmt.Printf("* %.2f MIST\n", suiReward.Sui())
+			fmt.Printf("* $%s\n", rewardUSD.String())
+
+			// TODO: Get daily operational cost.
+
+			// TODO: Calculate profit.
+			// TODO: Extract Reference Gas Price.
 
 			return nil
 		},
