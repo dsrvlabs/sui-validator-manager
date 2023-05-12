@@ -155,9 +155,9 @@ type SuiSystemState struct {
 	ValidatorVeryLowStakeThreshold Mist  `json:"validatorVeryLowStakeThreshold"`
 	ValidatorLowStakeGracePeriod   Epoch `json:"validatorLowStakeGracePeriod,omitempty"`
 
-	StakeSubsidyBalance                   *Mist   `json:"stakeSubsidyBalance,omitempty"`
+	StakeSubsidyBalance                   *Mist  `json:"stakeSubsidyBalance,omitempty"`
 	StakeSubsidyDistributionCounter       Epoch  `json:"stakeSubsidyDistributionCounter"`
-	StakeSubsidyCurrentDistributionAmount *Mist   `json:"stakeSubsidyCurrentDistributionAmount"`
+	StakeSubsidyCurrentDistributionAmount *Mist  `json:"stakeSubsidyCurrentDistributionAmount"`
 	StakeSubsidyPeriodLength              Epoch  `json:"stakeSubsidyPeriodLength"`
 	StakeSubsidyDecreaseRate              uint64 `json:"stakeSubsidyDecreaseRate"`
 
@@ -215,7 +215,7 @@ type Validator struct {
 	StakingPoolID                string `json:"stakingPoolId,omitempty"`
 	StakingPoolActivationEpoch   Epoch  `json:"stakingPoolActivationEpoch,omitempty"`
 	StakingPoolDeactivationEpoch Epoch  `json:"stakingPoolDeactivationEpoch,omitempty"`
-	StakingPoolSuiBalance        *Mist   `json:"stakingPoolSuiBalance,omitempty"`
+	StakingPoolSuiBalance        *Mist  `json:"stakingPoolSuiBalance,omitempty"`
 
 	RewardsPool      Mist `json:"rewardsPool,omitempty"`
 	PoolTokenBalance Mist `json:"poolTokenBalance,omitempty"`

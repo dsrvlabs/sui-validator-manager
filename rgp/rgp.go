@@ -7,7 +7,8 @@ import (
 	"github.com/dsrvlabs/sui-validator-manager/types"
 )
 
-/**
+/*
+*
 TODOs
 - Add tally score.
 - gamma value from onchain.

@@ -26,7 +26,7 @@ func TestRGP_CalculateReward(t *testing.T) {
 
 	selfStake, _ := new(big.Int).SetString("8491585775550", 10)
 
-	reward, err :=rgp.CalculateReward(*state, storageFund, computationCost, selfStake, validatorAddr)
+	reward, err := rgp.CalculateReward(*state, storageFund, computationCost, selfStake, validatorAddr)
 
 	fmt.Println(reward, err)
 
