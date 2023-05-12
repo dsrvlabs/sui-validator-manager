@@ -19,7 +19,7 @@ func TestRGP_RewardCalculation(t *testing.T) {
 
 	testSuiAddress := "0x6f4e73ee97bfae95e054d31dff1361a839aaadf2cfdb873ad2b07d479507905a"
 	validator := types.Validator{
-		SuiAddress: testSuiAddress,
+		SuiAddress:            testSuiAddress,
 		VotingPower:           json.Number("56"),
 		CommissionRate:        json.Number("1000"),
 		StakingPoolSuiBalance: new(types.Mist).SetString("26020681646333831"),

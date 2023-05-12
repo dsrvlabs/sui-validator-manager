@@ -226,5 +226,5 @@ func TestGetStakes(t *testing.T) {
 
 	assert.Equal(t, "0x6f4e73ee97bfae95e054d31dff1361a839aaadf2cfdb873ad2b07d479507905a", stakeInfo[0].ValidatorAddress)
 	assert.Equal(t, "1349674360863", stakeInfo[0].Stakes.Sum().String())
-	 assert.Equal(t, "1349674360863", stakeInfo.StakeSum().String())
+	assert.Equal(t, "1349674360863", stakeInfo.StakeSum().String())
 }

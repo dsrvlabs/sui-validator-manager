@@ -28,7 +28,6 @@ func TestCheckpoint(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-
 func TestLatestSuiSystemState(t *testing.T) {
 	var rpcURL = "https://sui-rpc-mainnet.testnet-pride.com:443"
 	cli := rpc.NewClient([]string{rpcURL})
