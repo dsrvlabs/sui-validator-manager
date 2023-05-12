@@ -1,15 +1,19 @@
 package main
 
 import (
+	"errors"
+	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/dsrvlabs/sui-validator-manager/rpc"
-	"github.com/dsrvlabs/sui-validator-manager/view"
-
 	"github.com/dsrvlabs/sui-validator-manager/config"
+	"github.com/dsrvlabs/sui-validator-manager/rgp"
+	"github.com/dsrvlabs/sui-validator-manager/rpc"
+	"github.com/dsrvlabs/sui-validator-manager/types"
+	"github.com/dsrvlabs/sui-validator-manager/view"
 )
 
 var rpcURL = "https://sui-rpc-mainnet.testnet-pride.com:443"
@@ -67,6 +71,10 @@ func main() {
 		},
 	}
 
+	_ = console.PersistentFlags().StringP("config", "c", "", "Config file path")
+	viper.BindPFlag("console_config", console.PersistentFlags().Lookup("config"))
+	rootCmd.AddCommand(console)
+
 	list := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},
@@ -112,13 +120,92 @@ func main() {
 		},
 	}
 
-	_ = console.PersistentFlags().StringP("config", "c", "", "Config file path")
-	viper.BindPFlag("console_config", console.PersistentFlags().Lookup("config"))
-	rootCmd.AddCommand(console)
-
 	_ = list.PersistentFlags().StringP("config", "c", "", "Config file path")
 	viper.BindPFlag("list_config", list.PersistentFlags().Lookup("config"))
 	rootCmd.AddCommand(list)
+
+	predict := &cobra.Command{
+		Use:     "predict",
+		Aliases: []string{"p"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			configFile := viper.GetString("predict_config")
+			config, err := config.Load(configFile)
+			if err != nil {
+				return err
+			}
+
+			valAddress := viper.GetString("predict_val_addr")
+
+			cli := rpc.NewClient([]string{config.RPC[0].Endpoint})
+
+			seq, err := cli.LatestCheckpointSequenceNumber()
+			if err != nil {
+				return err
+			}
+
+			cp, err := cli.Checkpoint(seq)
+			if err != nil {
+				return err
+			}
+
+			state, err := cli.LatestSuiSystemState()
+			if err != nil {
+				return err
+			}
+
+			// Filter by name and address
+			var validator *types.Validator
+			for _, val := range state.ActiveValidators {
+				if val.SuiAddress == valAddress {
+					validator = &val
+					break
+				}
+			}
+
+			if validator == nil {
+				return errors.New("cannot find validator")
+			}
+
+			// Get self stakes
+			stakes, err := cli.GetStakes(valAddress)
+			if err != nil {
+				return err
+			}
+
+			totalSelfStakes := stakes.StakeSum().BigInt()
+			storageFund := new(big.Int).Sub(
+				state.StorageFundNonRefundableBalance.BigInt(),
+				state.StorageFundTotalObjectStorageRebate.BigInt())
+
+			// TODO: Predict Computational cost.
+			reward, err := rgp.CalculateReward(
+				*state,
+				storageFund,
+				cp.EpochRollingGasCostSummary.ComputationCost.BigInt(),
+				totalSelfStakes,
+				valAddress,
+			)
+
+			if err != nil {
+				return err
+			}
+
+			suiReward := types.Mist{}
+			suiReward.SetString(reward.String())
+
+			fmt.Printf("Expected reward of %s\n", valAddress)
+			fmt.Printf("* %.2f MIST\n", suiReward.Sui())
+
+			return nil
+		},
+	}
+
+	_ = predict.PersistentFlags().StringP("config", "c", "", "Config file path")
+	viper.BindPFlag("predict_config", predict.PersistentFlags().Lookup("config"))
+
+	_ = predict.PersistentFlags().StringP("address", "a", "", "Validator address")
+	viper.BindPFlag("predict_val_addr", predict.PersistentFlags().Lookup("address"))
+	rootCmd.AddCommand(predict)
 
 	if err := rootCmd.Execute(); err != nil {
 		panic(err)
